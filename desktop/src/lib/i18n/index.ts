@@ -46,6 +46,7 @@ i18n
           nav: {
             home: 'Home',
             chat: 'Chat',
+            connection: 'Connection',
           },
         },
       },
@@ -88,6 +89,7 @@ i18n
           nav: {
             home: '首頁',
             chat: '聊天',
+            connection: '連線設定',
           },
         },
       },
@@ -130,6 +132,7 @@ i18n
           nav: {
             home: 'ホーム',
             chat: 'チャット',
+            connection: '接続設定',
           },
         },
       },
