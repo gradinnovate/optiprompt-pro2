@@ -1,0 +1,20 @@
+project:
+    name: "OptiPrompt-Pro"
+    description: "OptiPrompt-Pro is a project with a desktop app and backend apis"
+
+structure:
+    desktop:
+        name: "OptiPrompt-Desktop"
+        description: "OptiPrompt-Desktop is a project with a desktop app"
+        path: "desktop"
+    backend:
+        name: "OptiPrompt-Backend"
+        description: "OptiPrompt-Backend is a project with a backend apis"
+        path: "backend"
+
+
+
+
+
+
+
