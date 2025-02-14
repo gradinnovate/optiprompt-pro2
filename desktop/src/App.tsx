@@ -1,26 +1,15 @@
 import { FC } from 'react'
-import { useTranslation } from 'react-i18next'
-import LanguageSelector from './components/LanguageSelector'
-import LoginButton from './components/auth/LoginButton'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './lib/context/AuthContext'
+import Navbar from './components/layout/Navbar'
+import HomePage from './pages/Home'
+import CheckConnection from './pages/CheckConnection'
 
-const AppContent: FC = () => {
-  const { t } = useTranslation()
-
+const AppLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-      <LoginButton />
-      <LanguageSelector />
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-2xl mx-auto text-center space-y-4">
-          <h1 className="text-4xl font-bold">
-            {t('welcome')}
-          </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300">
-            {t('description')}
-          </p>
-        </div>
-      </div>
+    <div className="min-h-screen relative">
+      <Navbar />
+      {children}
     </div>
   )
 }
@@ -28,7 +17,12 @@ const AppContent: FC = () => {
 const App: FC = () => {
   return (
     <AuthProvider>
-      <AppContent />
+      <Router>
+        <Routes>
+          <Route path="/" element={<AppLayout><HomePage /></AppLayout>} />
+          <Route path="/check-connection" element={<AppLayout><CheckConnection /></AppLayout>} />
+        </Routes>
+      </Router>
     </AuthProvider>
   )
 }
