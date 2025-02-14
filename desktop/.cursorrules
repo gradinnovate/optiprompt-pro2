@@ -93,3 +93,5 @@ rules:
   - "Implement proper type safety between main and renderer processes"
   - "Follow Next.js best practices for page routing"
   - "Use Tailwind CSS utility classes consistently"
+  - "Use shadcn/ui components consistently"
+  - "Use TypeScript not JavaScript"
