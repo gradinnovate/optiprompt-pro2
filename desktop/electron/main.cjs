@@ -13,6 +13,7 @@ log.info('App starting...')
 log.info('App paths:', {
   userData: app.getPath('userData'),
   appPath: app.getAppPath(),
+  resourcesPath: process.resourcesPath,
   exe: app.getPath('exe')
 })
 
@@ -73,7 +74,7 @@ function createWindow() {
   // Load the app
   const indexPath = isDev 
     ? 'http://localhost:5173'
-    : path.join(process.resourcesPath, 'dist', 'index.html')
+    : path.join(process.resourcesPath, 'app.asar.unpacked', 'dist', 'index.html')
   
   log.info('Loading app from:', indexPath)
 
@@ -81,8 +82,41 @@ function createWindow() {
     mainWindow.loadURL('http://localhost:5173')
   } else {
     try {
-      mainWindow.loadFile(indexPath)
-      log.info('App loaded from:', indexPath)
+      mainWindow.loadFile(indexPath, {
+        nodeIntegration: false,
+        contextIsolation: true,
+        webSecurity: true
+      })
+      
+      // 在生產環境也開啟開發者工具以便調試
+      mainWindow.webContents.openDevTools()
+      
+      // 監聽更多事件
+      mainWindow.webContents.on('console-message', (event, level, message) => {
+        log.info('Console:', message)
+      })
+
+      mainWindow.webContents.on('did-start-loading', () => {
+        log.info('Started loading')
+      })
+
+      mainWindow.webContents.on('did-stop-loading', () => {
+        log.info('Stopped loading')
+      })
+
+      mainWindow.webContents.on('did-finish-load', () => {
+        log.info('Finished loading')
+        // 檢查頁面內容
+        mainWindow.webContents.executeJavaScript(`
+          console.log('Document body:', document.body.innerHTML);
+          console.log('Root element:', document.getElementById('root'));
+        `)
+      })
+
+      // 添加錯誤處理
+      mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
+        log.error('Failed to load:', errorCode, errorDescription)
+      })
     } catch (error) {
       log.error('Failed to load index.html:', error)
       log.error(error.stack)

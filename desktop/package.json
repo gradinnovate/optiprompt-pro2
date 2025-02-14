@@ -16,7 +16,8 @@
     "build": "tsc --noEmit && vite build && tsx scripts/postbuild.ts",
     "build:electron": "npm run build && electron-builder",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview --port 5173 --open",
+    "serve": "serve dist"
   },
   "build": {
     "appId": "com.optiprompt.pro",
@@ -26,7 +27,8 @@
     },
     "files": [
       "dist/**/*",
-      "electron/**/*"
+      "electron/main.cjs",
+      "electron/preload.cjs"
     ],
     "asar": {
       "smartUnpack": true
@@ -34,12 +36,6 @@
     "asarUnpack": [
       "node_modules/**/*.node",
       "dist/**/*"
-    ],
-    "extraResources": [
-      {
-        "from": "dist",
-        "to": "dist"
-      }
     ],
     "mac": {
       "category": "public.app-category.productivity",
@@ -91,6 +87,7 @@
     "ollama": "^0.4.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-error-boundary": "^5.0.0",
     "react-i18next": "^15.4.0",
     "react-router-dom": "^6.22.2",
     "shadcn-ui": "^0.9.4",
@@ -116,6 +113,7 @@
     "eslint-plugin-react-refresh": "^0.4.5",
     "postcss": "^8.4.35",
     "prettier": "^3.2.5",
+    "serve": "^14.2.4",
     "tailwindcss": "^3.4.1",
     "tsx": "^4.19.2",
     "typescript": "^5.2.2",

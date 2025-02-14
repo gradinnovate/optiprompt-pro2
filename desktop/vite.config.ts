@@ -21,14 +21,16 @@ export default defineConfig({
     emptyOutDir: true,
     sourcemap: true,
     base: './',
-    target: 'esnext',
     minify: 'esbuild',
-    commonjsOptions: {
-      include: [/node_modules/],
-      transformMixedEsModules: true,
-    },
     rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html')
+      },
       output: {
+        format: 'es',
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
         manualChunks: {
           vendor: [
             'react',
@@ -47,9 +49,19 @@ export default defineConfig({
         },
       },
     },
+    modulePreload: {
+      polyfill: false
+    },
+    target: ['es2020', 'chrome100', 'safari13'],
+    cssTarget: ['chrome100', 'safari13'],
+    assetsInlineLimit: 4096,
     chunkSizeWarningLimit: 1000,
   },
   optimizeDeps: {
     include: ['firebase/app', 'firebase/auth'],
+  },
+  preview: {
+    port: 5173,
+    open: true
   },
 }); 

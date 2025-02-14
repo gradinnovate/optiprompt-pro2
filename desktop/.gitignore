@@ -44,3 +44,5 @@ release/
 
 # electron
 electron/main.js
+electron/*.js.map
+electron/*.d.ts

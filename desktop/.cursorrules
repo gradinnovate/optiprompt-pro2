@@ -95,3 +95,50 @@ rules:
   - "Use Tailwind CSS utility classes consistently"
   - "Use shadcn/ui components consistently"
   - "Use TypeScript not JavaScript"
+  - name: "Use HashRouter in Electron Apps"
+    description: |
+      When building React applications with Electron, always use HashRouter instead of BrowserRouter.
+      This is because Electron uses the file:// protocol in production, which doesn't work well with BrowserRouter's
+      history API-based routing.
+    
+    pattern: |
+      import { BrowserRouter as Router } from 'react-router-dom'
+    
+    examples:
+      - before: |
+          import { BrowserRouter as Router } from 'react-router-dom'
+          
+          const App = () => {
+            return (
+              <Router>
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                </Routes>
+              </Router>
+            )
+          }
+        
+        after: |
+          import { HashRouter as Router } from 'react-router-dom'
+          
+          const App = () => {
+            return (
+              <Router>
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                </Routes>
+              </Router>
+            )
+          }
+    
+    explanation: |
+      - BrowserRouter uses HTML5 history API which requires a web server
+      - Electron apps run on file:// protocol in production
+      - HashRouter uses URL hashes (#) which work with file:// protocol
+      - This prevents blank screens and routing issues in production builds
+    
+    tags:
+      - electron
+      - react
+      - react-router
+      - routing

@@ -25,14 +25,18 @@ export const useAuth = () => {
   return context;
 };
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export function AuthProvider({ children }: { children: ReactNode }) {
+  console.log('AuthProvider rendering')
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log('AuthProvider useEffect running, loading:', loading)
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log('Auth state changed:', user ? 'user exists' : 'no user')
       setUser(user);
       setLoading(false);
+      console.log('Auth state updated, loading:', false, 'user:', user ? 'exists' : 'null')
     });
 
     return unsubscribe;
@@ -57,7 +61,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider value={{ user, loading, signInWithGoogle, signOut }}>
-      {!loading && children}
+      {loading ? (
+        <div className="flex items-center justify-center h-screen">
+          <div className="text-center">
+            <div>Loading auth state...</div>
+          </div>
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
-}; 
+} 
