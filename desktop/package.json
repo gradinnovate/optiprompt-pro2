@@ -1,6 +1,11 @@
 {
   "name": "optiprompt-pro",
   "version": "0.1.0",
+  "description": "AI-powered desktop assistant for seamless communication",
+  "author": {
+    "name": "Your Name",
+    "email": "your.email@example.com"
+  },
   "private": true,
   "type": "module",
   "main": "electron/main.cjs",
@@ -9,8 +14,38 @@
     "dev:vite": "vite",
     "dev:electron": "cross-env NODE_ENV=development electron .",
     "build": "tsc && vite build",
+    "build:electron": "npm run build && electron-builder",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
+  },
+  "build": {
+    "appId": "com.optiprompt.pro",
+    "productName": "OptiPrompt Pro",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "build/icon.icns"
+    },
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        "nsis"
+      ]
+    },
+    "linux": {
+      "icon": "build/icon.png",
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Productivity"
+    }
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.6",
@@ -21,9 +56,7 @@
     "@shadcn/ui": "^0.0.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
-    "electron": "^29.1.0",
     "firebase": "^10.8.0",
-    "firebase-admin": "^12.0.0",
     "framer-motion": "^11.0.8",
     "i18next": "^24.2.2",
     "i18next-browser-languagedetector": "^8.0.2",
@@ -37,7 +70,8 @@
     "shadcn-ui": "^0.9.4",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
-    "date-fns": "^3.3.1"
+    "date-fns": "^3.3.1",
+    "electron-store": "^8.1.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.20",
@@ -56,6 +90,9 @@
     "prettier": "^3.2.5",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.2.2",
-    "vite": "^5.1.4"
+    "vite": "^5.1.4",
+    "electron-builder": "^24.12.0",
+    "electron": "^29.1.0",
+    "@types/firebase": "^3.2.1"
   }
 }

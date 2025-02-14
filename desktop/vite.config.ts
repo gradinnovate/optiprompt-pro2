@@ -8,6 +8,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+    mainFields: ['browser', 'module', 'main'],
   },
   root: path.resolve(__dirname, '.'),
   publicDir: 'public',
@@ -16,5 +17,33 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+    commonjsOptions: {
+      include: [/node_modules/],
+      transformMixedEsModules: true,
+    },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: [
+            'react',
+            'react-dom',
+            'react-router-dom',
+            'framer-motion',
+          ],
+          firebase: ['firebase/app', 'firebase/auth'],
+          ui: [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-hover-card',
+            '@radix-ui/react-separator',
+            '@radix-ui/react-slot',
+            '@radix-ui/react-tooltip',
+          ],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+  },
+  optimizeDeps: {
+    include: ['firebase/app', 'firebase/auth'],
   },
 }); 

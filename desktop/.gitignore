@@ -37,3 +37,6 @@ lerna-debug.log*
 .env.local
 .env.development
 .env.production
+
+# build
+!build/icon.*
