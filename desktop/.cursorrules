@@ -1,0 +1,95 @@
+# Project Information
+project:
+  name: "OptiPrompt-Desktop"
+  description: "An Electron-based desktop chat application using Ollama"
+  stack:
+    - "TypeScript"
+    - "Next.js"
+    - "Electron"
+    - "Vite"
+    - "Tailwind CSS"
+    - "shadcn/ui"
+
+# Coding Standards
+coding:
+  style: "prettier"  # Use Prettier for code formatting
+  line_length: 80
+  avoid_patterns:
+    - "any type in TypeScript"
+    - "console.log in production code"
+    - "direct DOM manipulation"
+  prefer:
+    - "arrow functions for components"
+    - "async/await over .then()"
+    - "named exports over default exports"
+    - "const over let when possible"
+
+# File Structure Guidelines
+structure:
+  enforce:
+    - path: "src/"
+      description: "Main source code directory"
+    - path: "src/components/"
+      description: "React components"
+    - path: "src/lib/"
+      description: "Utility functions and shared code"
+    - path: "src/styles/"
+      description: "Global styles and Tailwind configuration"
+    - path: "src/types/"
+      description: "TypeScript interfaces for data structures"
+    - path: "electron/"
+      description: "Electron main process code"
+  naming:
+    - "Use PascalCase for component files"
+    - "Use camelCase for utility files"
+    - "Use kebab-case for CSS files"
+
+# AI Behavior Customization
+ai:
+  guidance:
+    - "Write self-documenting code with clear variable names"
+    - "Include TypeScript types for all functions and components"
+    - "Follow React best practices and hooks rules"
+    - "Implement proper error handling for Ollama API calls"
+
+# Preferred Libraries and Dependencies
+dependencies:
+  required:
+    - "ollama"
+    - "electron"
+    - "next"
+    - "react"
+    - "react-dom"
+    - "tailwindcss"
+    - "@shadcn/ui"
+    - "vite"
+    - "firebase"
+  avoid:
+    - "jquery"
+    - "moment.js"  # Use date-fns instead
+    - "material-ui"  # Project uses shadcn/ui
+
+# Component Guidelines
+components:
+  rules:
+    - "Use functional components with hooks"
+    - "Implement proper prop types with TypeScript interfaces"
+    - "Keep components focused and single-responsibility"
+    - "Use composition over inheritance"
+    - "Implement error boundaries where necessary"
+
+# State Management
+state:
+  prefer:
+    - "React Context for global state"
+    - "useState for local component state"
+    - "useReducer for complex state logic"
+
+# Special Instructions for AI Assistant
+rules:
+  - "Generate TypeScript interfaces for all data structures"
+  - "Include error handling in async operations"
+  - "Use proper electron IPC communication patterns"
+  - "Implement proper type safety between main and renderer processes"
+  - "Follow Next.js best practices for page routing"
+  - "Use Tailwind CSS utility classes consistently"
