@@ -1,0 +1,40 @@
+# Backend project structure rules for OptiPrompt-Backend
+# Node.js + TypeScript + Vercel deployment
+
+ignore:
+  - node_modules/
+  - .vercel/
+  - dist/
+  - .env
+  - .env.local
+  - .build/
+  - .next/
+
+folders:
+  src:
+    api:         # Vercel serverless functions
+      hello:     # Example API endpoint
+    lib:         # Shared libraries and utilities
+    models:      # Data models and types
+    services:    # Business logic and services
+    config:      # Configuration files
+    types:       # TypeScript type definitions
+    utils:       # Helper functions and utilities
+  public:        # Static files
+  tests:         # Test files
+
+files:
+  - package.json
+  - tsconfig.json
+  - .env.example
+  - .gitignore
+  - vercel.json
+  - README.md
+
+patterns:
+  - "*.ts"
+  - "*.tsx"
+  - "*.d.ts"
+  - "!.env.example"
+  - ".env*"
+  - "api/**/*.ts"    # Vercel API routes 
