@@ -3,19 +3,28 @@ import axios, { AxiosInstance } from 'axios';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import express from 'express';
-import { AddressInfo } from 'net';
 import { config } from 'dotenv';
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithCustomToken } from 'firebase/auth';
+import { firebaseConfig } from '../lib/firebase/client';
 
 // 確保載入環境變量
 config();
 
 const execAsync = promisify(exec);
 
+// 初始化 Firebase client
+const firebaseApp = initializeApp(firebaseConfig);
+const firebaseAuth = getAuth(firebaseApp);
+
+// API 基礎 URL
+const API_BASE_URL = 'http://localhost:3000';
+const AUTH_CALLBACK_URL = `${API_BASE_URL}/api/auth/callback`;
+
 describe('App OAuth Flow', () => {
   const TEST_PORT = 5001;
   const TEST_SERVER = `http://localhost:${TEST_PORT}`;
   const REDIRECT_URI = `${TEST_SERVER}/getauthcode`;
-  const BACKEND_URL = 'http://localhost:3000/api/auth/callback';
   
   let axiosInstance: AxiosInstance;
   let appOAuthClient: OAuth2Client;
@@ -23,6 +32,7 @@ describe('App OAuth Flow', () => {
   let server: any;
   
   let authCodeResolve: ((code: string) => void) | null = null;
+  let customToken: string;
   
   beforeAll(async () => {
     console.log('\nSetting up test environment...');
@@ -119,9 +129,17 @@ describe('App OAuth Flow', () => {
 
   afterAll(async () => {
     console.log('\nCleaning up test environment...');
+    
+    // 關閉測試服務器
     if (server) {
       await new Promise(resolve => server.close(resolve));
       console.log('Test server closed');
+    }
+
+    
+    // 關閉 axios 實例
+    if (axiosInstance) {
+      axiosInstance.defaults.httpAgent?.destroy();
     }
   });
 
@@ -179,7 +197,7 @@ describe('App OAuth Flow', () => {
       client_type: 'app'
     });
 
-    const response = await axiosInstance.get(BACKEND_URL, {
+    const response = await axiosInstance.get(AUTH_CALLBACK_URL, {
       params: {
         code,
         redirect_uri: REDIRECT_URI,
@@ -213,12 +231,13 @@ describe('App OAuth Flow', () => {
       displayName: response.data.user.displayName
     });
     
+    customToken = response.data.customToken;
   }, 180000);
 
   it('should handle invalid authorization code', async () => {
     const mockCode = 'invalid_auth_code';
     
-    const response = await axiosInstance.get(BACKEND_URL, {
+    const response = await axiosInstance.get(AUTH_CALLBACK_URL, {
       params: {
         code: mockCode,
         redirect_uri: REDIRECT_URI,
@@ -233,10 +252,41 @@ describe('App OAuth Flow', () => {
   });
 
   it('should handle missing authorization code', async () => {
-    const response = await axiosInstance.get(BACKEND_URL);
+    const response = await axiosInstance.get(AUTH_CALLBACK_URL);
     
     expect(response.status).toBe(400);
     expect(response.data).toHaveProperty('error');
     expect(response.data.message).toBe('Authorization code is required');
+  });
+
+  test('should access protected API with valid token', async () => {
+    // 使用 custom token 登入
+    const userCredential = await signInWithCustomToken(firebaseAuth, customToken);
+    const idToken = await userCredential.user.getIdToken();
+
+    const response = await axios.get(`${API_BASE_URL}/api/helloworld`, {
+      headers: {
+        Authorization: `Bearer ${idToken}`
+      }
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.data).toHaveProperty('message', 'Hello World!');
+    expect(response.data).toHaveProperty('user');
+    console.log('response.data', response.data);
+  });
+
+  test('should reject API access without token', async () => {
+    const agent = new (require('http').Agent)({ keepAlive: false });
+    
+    const response = await axios.get(`${API_BASE_URL}/api/helloworld`, {
+      validateStatus: () => true,
+      httpAgent: agent
+    });
+
+    expect(response.status).toBe(401);
+    expect(response.data).toHaveProperty('error', 'Unauthorized');
+    
+    agent.destroy();
   });
 }); 

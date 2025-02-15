@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { getQueryValue } from '../../../utils/query';
 import { getGoogleTokens, verifyGoogleToken } from '../../../lib/google/auth';
 import { auth } from '../../../lib/firebase/admin';
+import { handleUserLogin } from '../../../lib/account';
 
 export default async function handler(
   req: Request,
@@ -90,10 +91,18 @@ export default async function handler(
         throw error;
       });
 
-      // 7. 創建自定義 token
+      // 7. 處理用戶登入（創建或更新帳號）
+      await handleUserLogin({
+        uid: firebaseUser.uid,
+        email: firebaseUser.email!,
+        displayName: firebaseUser.displayName || undefined,
+        photoURL: firebaseUser.photoURL || undefined
+      });
+
+      // 8. 創建自定義 token
       const customToken = await auth.createCustomToken(firebaseUser.uid);
 
-      // 8. 返回用戶信息和 token
+      // 9. 返回用戶信息和 token
       res.status(200).json({
         customToken,
         user: {

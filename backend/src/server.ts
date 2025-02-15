@@ -4,6 +4,7 @@ import { config } from 'dotenv';
 import { auth } from './lib/firebase/admin';
 import authCallbackHandler from './api/auth/callback';
 import helloworldHandler from './api/helloworld';
+import { authMiddleware } from './middleware/auth';
 
 // 載入環境變量
 config();
@@ -41,7 +42,7 @@ app.use((req, res, next) => {
 });
 
 // API 路由
-app.get('/api/helloworld', helloworldHandler);
+app.get('/api/helloworld', authMiddleware, helloworldHandler);
 app.get('/api/auth/callback', authCallbackHandler);
 
 // 啟動服務器

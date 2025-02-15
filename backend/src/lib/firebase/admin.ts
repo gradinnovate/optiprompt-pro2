@@ -1,32 +1,52 @@
-import { initializeApp, cert, getApps } from 'firebase-admin/app';
+import { initializeApp, getApps, cert, App } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
+import { getFirestore } from 'firebase-admin/firestore';
 import { config } from 'dotenv';
 
 // 確保載入環境變量
 config();
 
-// 驗證必要的環境變量
-if (!process.env.FIREBASE_PROJECT_ID) {
-  throw new Error('Missing FIREBASE_PROJECT_ID');
-}
-if (!process.env.FIREBASE_CLIENT_EMAIL) {
-  throw new Error('Missing FIREBASE_CLIENT_EMAIL');
-}
-if (!process.env.FIREBASE_PRIVATE_KEY) {
-  throw new Error('Missing FIREBASE_PRIVATE_KEY');
+// Firebase Admin SDK 初始化
+function initAdmin(): App {
+  // 驗證必要的環境變量
+  const requiredEnvVars = {
+    projectId: process.env.FIREBASE_PROJECT_ID as string,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL as string,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY as string
+  };
+
+  // 檢查缺失的環境變量
+  const missingVars = Object.entries(requiredEnvVars)
+    .filter(([_, value]) => !value)
+    .map(([key]) => key);
+
+  if (missingVars.length > 0) {
+    throw new Error(`Missing required Firebase configuration: ${missingVars.join(', ')}`);
+  }
+
+  const apps = getApps();
+  if (!apps.length) {
+    try {
+      return initializeApp({
+        credential: cert({
+          projectId: requiredEnvVars.projectId,
+          clientEmail: requiredEnvVars.clientEmail,
+          privateKey: requiredEnvVars.privateKey.replace(/\\n/g, '\n'),
+        }),
+      });
+    } catch (error) {
+      console.error('Firebase Admin initialization error:', error);
+      throw error;
+    }
+  }
+  return apps[0];
 }
 
-// 初始化 Firebase Admin
-if (!getApps().length) {
-  initializeApp({
-    credential: cert({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      // 處理私鑰中的換行符
-      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-    }),
-  });
-}
+// 初始化 Admin SDK
+const app = initAdmin();
 
-// 導出 auth 實例
-export const auth = getAuth(); 
+// 導出 Firebase Admin 服務實例
+export const auth = getAuth(app);
+export const adminDB = getFirestore(app); 
+export const accountsRef = adminDB.collection('accounts'); 
+export const promptsRef = adminDB.collection('prompts');

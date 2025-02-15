@@ -1,11 +1,17 @@
 import { Request, Response } from 'express';
+import { DecodedIdToken } from 'firebase-admin/auth';
 
-export default function handler(req: Request, res: Response): void {
+interface AuthenticatedRequest extends Request {
+  user?: DecodedIdToken;
+}
+
+export default function handler(req: AuthenticatedRequest, res: Response): void {
   try {
     res.status(200).json({
       message: 'Hello World!',
       timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV || 'development'
+      environment: process.env.NODE_ENV || 'development',
+      user: req.user
     });
   } catch (error: any) {
     console.error('Hello world error:', error.message || error);
