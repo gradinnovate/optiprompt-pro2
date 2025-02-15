@@ -23,6 +23,10 @@ document.addEventListener('DOMContentLoaded', () => {
 contextBridge.exposeInMainWorld(
   'electron',
   {
+    openExternal: (url) => ipcRenderer.invoke('open-external', url),
+    handleAuthCallback: (callback) => {
+      ipcRenderer.on('auth-callback', (_, token) => callback(token))
+    },
     store: {
       get: (key) => store.get(key),
       set: (key, val) => store.set(key, val),

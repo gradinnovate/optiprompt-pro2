@@ -1,8 +1,9 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain, shell } = require('electron')
 const path = require('path')
 const Store = require('electron-store')
 const isDev = process.env.NODE_ENV === 'development'
 const log = require('electron-log')
+let mainWindow = null
 
 // Configure logging
 log.transports.file.level = isDev ? 'debug' : 'info'
@@ -41,9 +42,53 @@ const store = new Store({
   }
 })
 
+// 註冊自定義協議
+app.setAsDefaultProtocolClient('optiprompt')
+
+// 處理 deep linking URL
+// macOS 處理 deep linking
+app.on('open-url', (event, url) => {
+  event.preventDefault()
+  log.info('Deep link URL:', url)
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) mainWindow.restore()
+    mainWindow.focus()
+    mainWindow.webContents.send('auth-callback', url)
+  }
+})
+
+// Windows 處理 deep linking
+if (process.platform === 'win32') {
+  const gotTheLock = app.requestSingleInstanceLock()
+  if (!gotTheLock) {
+    app.quit()
+  } else {
+    app.on('second-instance', (event, commandLine) => {
+      const url = commandLine.pop()
+      log.info('Deep link URL from second instance:', url)
+      if (mainWindow) {
+        if (mainWindow.isMinimized()) mainWindow.restore()
+        mainWindow.focus()
+        mainWindow.webContents.send('auth-callback', url)
+      }
+    })
+  }
+}
+
+// 處理外部鏈接
+ipcMain.handle('open-external', async (_, url) => {
+  try {
+    await shell.openExternal(url)
+    return true
+  } catch (error) {
+    console.error('Failed to open external URL:', error)
+    return false
+  }
+})
+
 function createWindow() {
   log.info('Creating window...')
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     webPreferences: {
