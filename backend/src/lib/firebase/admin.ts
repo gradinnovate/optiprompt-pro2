@@ -1,27 +1,32 @@
-import { initializeApp, cert, ServiceAccount } from 'firebase-admin/app';
+import { initializeApp, cert, getApps } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { config } from 'dotenv';
 
-// Load environment variables
+// 確保載入環境變量
 config();
 
-// Ensure environment variables are set
-if (!process.env.FIREBASE_PROJECT_ID || 
-    !process.env.FIREBASE_CLIENT_EMAIL || 
-    !process.env.FIREBASE_PRIVATE_KEY) {
-  throw new Error('Missing Firebase Admin SDK credentials in environment variables');
+// 驗證必要的環境變量
+if (!process.env.FIREBASE_PROJECT_ID) {
+  throw new Error('Missing FIREBASE_PROJECT_ID');
+}
+if (!process.env.FIREBASE_CLIENT_EMAIL) {
+  throw new Error('Missing FIREBASE_CLIENT_EMAIL');
+}
+if (!process.env.FIREBASE_PRIVATE_KEY) {
+  throw new Error('Missing FIREBASE_PRIVATE_KEY');
 }
 
-// Initialize Firebase Admin with proper typing
-const serviceAccount: ServiceAccount = {
-  projectId: process.env.FIREBASE_PROJECT_ID,
-  clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-  privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-};
+// 初始化 Firebase Admin
+if (!getApps().length) {
+  initializeApp({
+    credential: cert({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      // 處理私鑰中的換行符
+      privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    }),
+  });
+}
 
-// Initialize Firebase Admin
-const app = initializeApp({
-  credential: cert(serviceAccount)
-});
-
-export const auth = getAuth(app); 
+// 導出 auth 實例
+export const auth = getAuth(); 
