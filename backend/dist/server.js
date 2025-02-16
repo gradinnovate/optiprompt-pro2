@@ -8,6 +8,7 @@ const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = require("dotenv");
 const callback_1 = __importDefault(require("./api/auth/callback"));
 const helloworld_1 = __importDefault(require("./api/helloworld"));
+const auth_1 = require("./middleware/auth");
 // 載入環境變量
 (0, dotenv_1.config)();
 // 檢查必要的環境變量
@@ -37,7 +38,7 @@ app.use((req, res, next) => {
     next();
 });
 // API 路由
-app.get('/api/helloworld', helloworld_1.default);
+app.get('/api/helloworld', auth_1.authMiddleware, helloworld_1.default);
 app.get('/api/auth/callback', callback_1.default);
 // 啟動服務器
 const server = app.listen(port, () => {

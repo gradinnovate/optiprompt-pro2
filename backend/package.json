@@ -8,7 +8,14 @@
     "start": "node dist/server.js",
     "test": "jest",
     "test:app-auth": "jest app-auth.test.ts --detectOpenHandles --forceExit",
-    "test:helloworld": "jest helloworld.test.ts"
+    "test:helloworld": "jest helloworld.test.ts",
+    "test:chat": "jest chat.test.ts",
+    "test:generate_prompt": "jest generate_prompt.test.ts",
+    "test:critique": "jest critique.test.ts",
+    "test:generate_variants": "jest generate_variants.test.ts",
+    "test:scoring": "jest scoring.test.ts",
+    "test:refine_prompt": "jest refine_prompt.test.ts",
+    "test:core_logic": "jest core_logic.test.ts"
   },
   "engines": {
     "node": ">=18.x"
@@ -28,6 +35,7 @@
     "firebase": "^11.3.1",
     "firebase-admin": "^12.7.0",
     "google-auth-library": "^9.15.1",
+    "openai": "^4.85.1",
     "typescript": "^5.7.3"
   },
   "devDependencies": {

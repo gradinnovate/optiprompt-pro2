@@ -1,4 +1,3 @@
-import { UserRecord } from 'firebase-admin/auth';
 import { Credits } from './credits';
 
 export interface Account {

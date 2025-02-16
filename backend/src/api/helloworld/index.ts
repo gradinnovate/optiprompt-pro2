@@ -1,9 +1,5 @@
-import { Request, Response } from 'express';
-import { DecodedIdToken } from 'firebase-admin/auth';
-
-interface AuthenticatedRequest extends Request {
-  user?: DecodedIdToken;
-}
+import { Response } from 'express';
+import { AuthenticatedRequest } from '../../types/authreq';
 
 export default function handler(req: AuthenticatedRequest, res: Response): void {
   try {

@@ -4,6 +4,7 @@ exports.default = handler;
 const query_1 = require("../../../utils/query");
 const auth_1 = require("../../../lib/google/auth");
 const admin_1 = require("../../../lib/firebase/admin");
+const account_1 = require("../../../lib/account");
 async function handler(req, res) {
     try {
         // 1. 驗證請求參數
@@ -77,9 +78,16 @@ async function handler(req, res) {
                 }
                 throw error;
             });
-            // 7. 創建自定義 token
+            // 7. 處理用戶登入（創建或更新帳號）
+            await (0, account_1.handleUserLogin)({
+                uid: firebaseUser.uid,
+                email: firebaseUser.email,
+                displayName: firebaseUser.displayName || undefined,
+                photoURL: firebaseUser.photoURL || undefined
+            });
+            // 8. 創建自定義 token
             const customToken = await admin_1.auth.createCustomToken(firebaseUser.uid);
-            // 8. 返回用戶信息和 token
+            // 9. 返回用戶信息和 token
             res.status(200).json({
                 customToken,
                 user: {

@@ -9,19 +9,28 @@ const child_process_1 = require("child_process");
 const util_1 = require("util");
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = require("dotenv");
+const app_1 = require("firebase/app");
+const auth_1 = require("firebase/auth");
+const client_1 = require("../lib/firebase/client");
 // 確保載入環境變量
 (0, dotenv_1.config)();
 const execAsync = (0, util_1.promisify)(child_process_1.exec);
+// 初始化 Firebase client
+const firebaseApp = (0, app_1.initializeApp)(client_1.firebaseConfig);
+const firebaseAuth = (0, auth_1.getAuth)(firebaseApp);
+// API 基礎 URL
+const API_BASE_URL = 'http://localhost:3000';
+const AUTH_CALLBACK_URL = `${API_BASE_URL}/api/auth/callback`;
 describe('App OAuth Flow', () => {
     const TEST_PORT = 5001;
     const TEST_SERVER = `http://localhost:${TEST_PORT}`;
     const REDIRECT_URI = `${TEST_SERVER}/getauthcode`;
-    const BACKEND_URL = 'http://localhost:3000/api/auth/callback';
     let axiosInstance;
     let appOAuthClient;
     let testServer;
     let server;
     let authCodeResolve = null;
+    let customToken;
     beforeAll(async () => {
         console.log('\nSetting up test environment...');
         // 1. 設置 axios 實例
@@ -107,9 +116,14 @@ describe('App OAuth Flow', () => {
     });
     afterAll(async () => {
         console.log('\nCleaning up test environment...');
+        // 關閉測試服務器
         if (server) {
             await new Promise(resolve => server.close(resolve));
             console.log('Test server closed');
+        }
+        // 關閉 axios 實例
+        if (axiosInstance) {
+            axiosInstance.defaults.httpAgent?.destroy();
         }
     });
     it('should complete App OAuth flow and return user info', async () => {
@@ -162,7 +176,7 @@ describe('App OAuth Flow', () => {
             client_id: '***' + process.env.GOOGLE_APP_CLIENT_ID.slice(-6),
             client_type: 'app'
         });
-        const response = await axiosInstance.get(BACKEND_URL, {
+        const response = await axiosInstance.get(AUTH_CALLBACK_URL, {
             params: {
                 code,
                 redirect_uri: REDIRECT_URI,
@@ -192,10 +206,11 @@ describe('App OAuth Flow', () => {
             email: response.data.user.email,
             displayName: response.data.user.displayName
         });
+        customToken = response.data.customToken;
     }, 180000);
     it('should handle invalid authorization code', async () => {
         const mockCode = 'invalid_auth_code';
-        const response = await axiosInstance.get(BACKEND_URL, {
+        const response = await axiosInstance.get(AUTH_CALLBACK_URL, {
             params: {
                 code: mockCode,
                 redirect_uri: REDIRECT_URI,
@@ -208,9 +223,33 @@ describe('App OAuth Flow', () => {
         expect(response.data.error).toBe('Invalid Authorization Code');
     });
     it('should handle missing authorization code', async () => {
-        const response = await axiosInstance.get(BACKEND_URL);
+        const response = await axiosInstance.get(AUTH_CALLBACK_URL);
         expect(response.status).toBe(400);
         expect(response.data).toHaveProperty('error');
         expect(response.data.message).toBe('Authorization code is required');
+    });
+    test('should access protected API with valid token', async () => {
+        // 使用 custom token 登入
+        const userCredential = await (0, auth_1.signInWithCustomToken)(firebaseAuth, customToken);
+        const idToken = await userCredential.user.getIdToken();
+        const response = await axios_1.default.get(`${API_BASE_URL}/api/helloworld`, {
+            headers: {
+                Authorization: `Bearer ${idToken}`
+            }
+        });
+        expect(response.status).toBe(200);
+        expect(response.data).toHaveProperty('message', 'Hello World!');
+        expect(response.data).toHaveProperty('user');
+        console.log('response.data', response.data);
+    });
+    test('should reject API access without token', async () => {
+        const agent = new (require('http').Agent)({ keepAlive: false });
+        const response = await axios_1.default.get(`${API_BASE_URL}/api/helloworld`, {
+            validateStatus: () => true,
+            httpAgent: agent
+        });
+        expect(response.status).toBe(401);
+        expect(response.data).toHaveProperty('error', 'Unauthorized');
+        agent.destroy();
     });
 });
