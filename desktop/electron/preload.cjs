@@ -23,7 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
 contextBridge.exposeInMainWorld(
   'electron',
   {
-    openExternal: (url) => ipcRenderer.invoke('open-external', url),
     handleAuthCallback: (callback) => {
       ipcRenderer.on('auth-callback', (_, token) => callback(token))
     },
@@ -33,11 +32,29 @@ contextBridge.exposeInMainWorld(
       delete: (key) => store.delete(key)
     },
     ipcRenderer: {
-      send: (channel, data) => {
-        ipcRenderer.send(channel, data)
+      invoke: (channel, data) => {
+        const validChannels = [
+          'find-available-port',
+          'start-auth-server',
+          'stop-auth-server',
+          'open-external'
+        ];
+        if (validChannels.includes(channel)) {
+          return ipcRenderer.invoke(channel, data);
+        }
+        return Promise.reject(new Error('Invalid channel'));
       },
       on: (channel, func) => {
-        ipcRenderer.on(channel, (event, ...args) => func(...args))
+        const validChannels = ['auth-code-received'];
+        if (validChannels.includes(channel)) {
+          ipcRenderer.on(channel, (event, ...args) => func(...args));
+        }
+      },
+      once: (channel, func) => {
+        const validChannels = ['auth-code-received'];
+        if (validChannels.includes(channel)) {
+          ipcRenderer.once(channel, (event, ...args) => func(...args));
+        }
       }
     }
   }

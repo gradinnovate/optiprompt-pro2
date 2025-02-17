@@ -2,18 +2,23 @@ import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/context/AuthContext';
-import { signInWithGoogle, signOut } from '@/lib/firebase/auth';
 import { UserCircle2, LogOut } from 'lucide-react';
+import { signInWithGoogle } from '@/lib/services/auth';
+import { getAuth } from 'firebase/auth';
 
 const LoginButton: FC = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
 
-  const handleAuth = async () => {
-    if (user) {
-      await signOut();
-    } else {
-      await signInWithGoogle();
+  const handleLogin = async () => {
+    if (!user) {
+      try {
+        console.log('Starting authentication...');
+        await signInWithGoogle();
+        console.log('Authentication completed');
+      } catch (error) {
+        console.error('Login failed:', error);
+      }
     }
   };
 
@@ -26,7 +31,7 @@ const LoginButton: FC = () => {
         <Button 
           variant="ghost" 
           size="sm"
-          onClick={handleAuth}
+          onClick={handleLogin}
           className="text-blue-200/60 hover:text-blue-200"
         >
           <LogOut className="h-5 w-5" />
@@ -39,11 +44,11 @@ const LoginButton: FC = () => {
     <Button 
       variant="ghost" 
       size="sm" 
-      onClick={handleAuth}
+      onClick={handleLogin}
       className="text-blue-200/60 hover:text-blue-200"
     >
       <UserCircle2 className="h-5 w-5 mr-2" />
-      <span className="hidden md:inline">{t('signInWithGoogle')}</span>
+      <span className="hidden md:inline">{t('login')}</span>
     </Button>
   );
 };

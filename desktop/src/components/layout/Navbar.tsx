@@ -2,28 +2,32 @@ import { FC } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import LoginButton from '@/components/auth/LoginButton';
 import LanguageSelector from '@/components/LanguageSelector';
-import { Separator } from '@/components/ui/separator';
+import { useAuth } from '@/lib/context/AuthContext';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { UserCircle2 } from 'lucide-react';
 
 const Navbar: FC = () => {
   const { t } = useTranslation();
   const location = useLocation();
+  const { user } = useAuth();
 
   return (
     <nav className="fixed w-full px-4 py-3 z-50 bg-gray-900/40 backdrop-blur-sm border-b border-blue-200/10">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <div className="max-w-7xl mx-auto grid grid-cols-12 items-center">
         {/* Logo section */}
-        <Link 
-          to="/" 
-          className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-        >
-          <img src="/logo.svg" alt="OptiPrompt Pro" className="w-8 h-8" />
-          <span className="text-xl font-semibold text-blue-50">OptiPrompt Pro</span>
-        </Link>
+        <div className="col-span-3">
+          <Link 
+            to="/" 
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+          >
+            <img src="/logo.svg" alt="OptiPrompt Pro" className="w-8 h-8" />
+            <span className="text-xl font-semibold text-blue-50">OptiPrompt Pro</span>
+          </Link>
+        </div>
 
         {/* Navigation links - center */}
-        <div className="hidden md:flex items-center gap-4 absolute left-1/2 -translate-x-1/2">
+        <div className="col-span-6 hidden md:flex items-center justify-center gap-4">
           <Link to="/">
             <Button 
               variant="ghost" 
@@ -44,12 +48,24 @@ const Navbar: FC = () => {
           )}
         </div>
 
-        {/* Right section */}
-        <div className="flex items-center gap-3">
-          <LanguageSelector />
-          <Separator orientation="vertical" className="h-6 bg-blue-200/10" />
-          <LoginButton />
+        {/* Right section - Language & User Profile */}
+        <div className="col-span-2 flex items-center justify-end gap-4">
+          <LanguageSelector /> 
+          {user && (
+            <div className="flex items-center gap-2 min-w-[250px]">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={user.photoURL || ''} />
+                <AvatarFallback>
+                  <UserCircle2 className="h-6 w-6 text-blue-200/60" />
+                </AvatarFallback>
+              </Avatar>
+              <span className="hidden lg:block text-sm text-blue-100 truncate w-[100px] text-right">
+                {user.displayName || user.email}
+              </span>
+            </div>
+          )}
         </div>
+        
       </div>
     </nav>
   );

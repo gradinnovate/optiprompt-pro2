@@ -12,7 +12,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { motion } from 'framer-motion';
 import { useAuth } from '@/lib/context/AuthContext';
-import { signInWithGoogle } from '@/lib/firebase/auth';
+import { signInWithGoogle } from '@/lib/services/auth';
 
 const Hero: FC = () => {
   const { t } = useTranslation();
@@ -37,7 +37,9 @@ const Hero: FC = () => {
   const handleGetStarted = async () => {
     if (!user) {
       try {
+        console.log('Starting authentication...');
         await signInWithGoogle();
+        console.log('Authentication completed');
       } catch (error) {
         console.error('Login failed:', error);
         return;
@@ -106,20 +108,18 @@ const Hero: FC = () => {
               { title: t('feature2.title'), description: t('feature2.description'), icon: '🚀', gradient: 'from-purple-500 to-pink-500' },
               { title: t('feature3.title'), description: t('feature3.description'), icon: '🔒', gradient: 'from-emerald-500 to-green-500' },
             ].map((feature, index) => (
-              <motion.div key={index} variants={item}>
-                <Card className="bg-gray-900/40 border-blue-200/10 backdrop-blur-sm hover:bg-gray-900/60 transition-colors duration-300">
-                  <CardHeader>
-                    <div className="text-4xl mb-3">{feature.icon}</div>
-                    <CardTitle className={`text-2xl bg-gradient-to-r ${feature.gradient} bg-clip-text text-transparent`}>
-                      {feature.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CardDescription className="text-blue-100/70 text-base leading-relaxed">
-                      {feature.description}
-                    </CardDescription>
-                  </CardContent>
-                </Card>
+              <motion.div
+                key={index}
+                variants={item}
+                className="bg-gray-900/40 backdrop-blur-sm rounded-lg p-6 border border-blue-200/10 h-[280px]"
+              >
+                <div className="text-4xl mb-4">{feature.icon}</div>
+                <h3 className="text-xl font-semibold text-blue-200 mb-3">
+                  {feature.title}
+                </h3>
+                <CardDescription className="text-blue-100/70 text-base leading-relaxed">
+                  {feature.description}
+                </CardDescription>
               </motion.div>
             ))}
           </motion.div>

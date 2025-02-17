@@ -14,6 +14,9 @@ export default defineConfig({
   publicDir: 'public',
   server: {
     port: 5173,
+    fs: {
+      strict: false,
+    },
   },
   build: {
     outDir: 'dist',
@@ -48,6 +51,7 @@ export default defineConfig({
           ],
         },
       },
+      external: ['electron', 'fs', 'path', 'http', 'net'],
     },
     modulePreload: {
       polyfill: false
@@ -59,6 +63,12 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: ['firebase/app', 'firebase/auth'],
+    esbuildOptions: {
+      define: {
+        global: 'globalThis',
+      },
+    },
+    exclude: ['electron']
   },
   preview: {
     port: 5173,

@@ -2,11 +2,15 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { verifyToken } from '../../../../src/lib/auth/verify';
 import { generatePromptVariants } from '../../../../src/lib/core/generate_variants';
 import { ApiResponse } from '../../../../src/types/api';
-
+import { corsMiddleware } from '../../../../src/lib/cors';
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse>
 ) {
+  if (corsMiddleware(req, res)) {
+    return;
+  }
+
   try {
     // 1. 驗證 token
     const authHeader = req.headers.authorization;

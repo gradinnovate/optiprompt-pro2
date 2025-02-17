@@ -3,7 +3,11 @@ const path = require('path')
 const Store = require('electron-store')
 const isDev = process.env.NODE_ENV === 'development'
 const log = require('electron-log')
+const http = require('http')
+const net = require('net')
+
 let mainWindow = null
+let authServer = null
 
 // Configure logging
 log.transports.file.level = isDev ? 'debug' : 'info'
@@ -75,14 +79,73 @@ if (process.platform === 'win32') {
   }
 }
 
+// 尋找可用的 port
+async function findAvailablePort(start, end) {
+  for (let port = start; port <= end; port++) {
+    try {
+      const server = net.createServer()
+      await new Promise((resolve, reject) => {
+        server.listen(port, () => {
+          server.close(() => resolve())
+        })
+        server.on('error', reject)
+      })
+      return port
+    } catch {
+      continue
+    }
+  }
+  throw new Error('No available ports found')
+}
+
+// 處理 IPC 事件
+ipcMain.handle('find-available-port', async (_, { start, end }) => {
+  return await findAvailablePort(start, end)
+})
+
+ipcMain.handle('start-auth-server', async (event, { port }) => {
+  authServer = http.createServer((req, res) => {
+    if (req.url?.startsWith('/getauthcode')) {
+      const url = new URL(req.url, `http://localhost:${port}`)
+      const code = url.searchParams.get('code')
+
+      if (code) {
+        event.sender.send('auth-code-received', code)
+        res.writeHead(200, { 'Content-Type': 'text/html' })
+        res.end('<html><body><h1>Authorization Successful</h1><p>You can close this window now.</p></body></html>')
+      } else {
+        res.writeHead(400, { 'Content-Type': 'text/plain' })
+        res.end('No authorization code received')
+      }
+    }
+  })
+
+  await new Promise((resolve, reject) => {
+    authServer.listen(port, () => {
+      console.log(`Auth server running at http://localhost:${port}`)
+      resolve()
+    })
+    authServer.on('error', reject)
+  })
+})
+
+ipcMain.handle('stop-auth-server', async () => {
+  if (authServer) {
+    await new Promise(resolve => authServer.close(resolve))
+    authServer = null
+  }
+})
+
 // 處理外部鏈接
 ipcMain.handle('open-external', async (_, url) => {
   try {
-    await shell.openExternal(url)
-    return true
+    console.log('Opening external URL:', url);
+    await shell.openExternal(url);
+    console.log('External URL opened successfully');
+    return true;
   } catch (error) {
-    console.error('Failed to open external URL:', error)
-    return false
+    console.error('Failed to open external URL:', error);
+    return false;
   }
 })
 

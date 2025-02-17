@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { getGoogleTokens, verifyGoogleToken } from '../../../../src/lib/google/auth';
 import { auth } from '../../../../src/lib/firebase/admin';
 import { ApiResponse } from '../../../../src/types/api';
+import { corsMiddleware } from '../../../../src/lib/cors';
 
 export type AuthCallbackResponse = ApiResponse & {
   data?: {
@@ -19,6 +20,11 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<AuthCallbackResponse>
 ) {
+  
+  if (corsMiddleware(req, res)) {
+    return;
+  }
+
   try {
     // 1. 驗證請求方法
     if (req.method !== 'POST') {

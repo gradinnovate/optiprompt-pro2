@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { verifyToken } from '../../../src/lib/auth/verify';
 import { ApiResponse } from '../../../src/types/api';
-
+import { corsMiddleware } from '../../../src/lib/cors';   
 type HelloWorldResponse = ApiResponse & {
   data?: {
     message: string;
@@ -15,6 +15,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<HelloWorldResponse>
 ) {
+  if (corsMiddleware(req, res)) {
+    return;
+  }
+
   try {
     // 1. 驗證請求方法
     if (req.method !== 'GET') {
