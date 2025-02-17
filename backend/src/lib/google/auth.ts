@@ -1,5 +1,6 @@
-import { OAuth2Client, TokenPayload, Credentials } from 'google-auth-library';
+import { OAuth2Client } from 'google-auth-library';
 import { config } from 'dotenv';
+import type { TokenPayload } from '../auth/verify';
 
 // 確保在最開始就載入環境變量
 config();
@@ -20,70 +21,46 @@ function createOAuthClient(redirectUri?: string) {
 // 創建默認的 OAuth client
 export const oauth2Client = createOAuthClient();
 
+/**
+ * 獲取 Google OAuth tokens
+ */
 export async function getGoogleTokens(
-  code: string, 
-  redirectUri?: string,
-  clientId?: string
-): Promise<Credentials> {
-  try {
-    console.log('Getting tokens for code:', '***' + code.slice(-10));
-    console.log('Using redirect URI:', redirectUri);
-    console.log('Using client ID:', clientId ? '***' + clientId.slice(-6) : 'default');
-    
-    // 創建對應的 OAuth client
-    let client: OAuth2Client;
-    if (clientId && redirectUri) {
-      client = new OAuth2Client({
-        clientId,
-        clientSecret: process.env.GOOGLE_APP_CLIENT_SECRET,
-        redirectUri
-      });
-    } else {
-      client = oauth2Client;
-    }
-    
-    console.log('Exchanging code for tokens...');
-    const { tokens } = await client.getToken({
-      code,
-      client_id: clientId,
-      redirect_uri: redirectUri
-    });
+  code: string,
+  redirectUri: string,
+  clientId: string
+) {
+  const oauth2Client = new OAuth2Client({
+    clientId: clientId,
+    clientSecret: process.env.GOOGLE_APP_CLIENT_SECRET,
+    redirectUri: redirectUri,
+  });
 
-    console.log('Received tokens:', {
-      hasIdToken: !!tokens.id_token,
-      hasAccessToken: !!tokens.access_token
-    });
-    return tokens;
-  } catch (error: any) {
-    // 改進錯誤處理
-    if (error.response?.data?.error === 'invalid_grant') {
-      console.error('Invalid or expired authorization code');
-      throw new Error('Authorization code is invalid or expired');
-    }
-    if (error.response?.data?.error === 'invalid_request') {
-      console.error('Invalid request:', error.response.data.error_description);
-      throw new Error('Invalid request configuration');
-    }
-    console.error('Error getting tokens:', error.message || error);
-    throw error;
-  }
+  const { tokens } = await oauth2Client.getToken(code);
+  return tokens;
 }
 
+/**
+ * 驗證 Google ID token
+ */
 export async function verifyGoogleToken(
-  idToken: string,
-  clientId?: string
-): Promise<TokenPayload | undefined> {
-  try {
-    console.log('Verifying token...');
-    const ticket = await oauth2Client.verifyIdToken({
-      idToken,
-      audience: clientId || process.env.GOOGLE_APP_CLIENT_ID,
-    });
-    const payload = ticket.getPayload();
-    console.log('Token verified successfully');
-    return payload;
-  } catch (error) {
-    console.error('Error verifying token:', error);
-    throw error;
+  token: string,
+  clientId: string = process.env.GOOGLE_APP_CLIENT_ID as string
+): Promise<TokenPayload> {
+  const client = new OAuth2Client(clientId);
+  const ticket = await client.verifyIdToken({
+    idToken: token,
+    audience: clientId
+  });
+
+  const payload = ticket.getPayload();
+  if (!payload) {
+    throw new Error('Invalid token payload');
   }
+
+  return {
+    email: payload.email || '',
+    name: payload.name,
+    picture: payload.picture,
+    exp: payload.exp
+  };
 } 

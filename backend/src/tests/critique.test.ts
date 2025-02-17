@@ -1,5 +1,6 @@
 import { critiqueGenerate } from '../lib/core/critique';
 import { config } from 'dotenv';
+import handler from '../../pages/api/core/critique';
 
 // 載入環境變量
 config();
@@ -46,5 +47,37 @@ Actual: Calculated from left to right`;
     expect(response.status).toBe('success');
     expect(response.type).toBe('critique_feedback');
     expect(response.data.critiqueFeedback.length).toBeGreaterThan(100);
+  });
+});
+
+describe('critique API', () => {
+  it('should handle critique request', async () => {
+    // 模擬 Next.js API request 和 response
+    const req = {
+      method: 'POST',
+      headers: {
+        'authorization': 'Bearer test-token'
+      },
+      body: {
+        prompt: 'test prompt',
+        example: 'test example'
+      }
+    } as any;
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn()
+    } as any;
+
+    // 調用 handler
+    await handler(req, res);
+
+    // 驗證響應
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 'success'
+      })
+    );
   });
 }); 
