@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "start": "next start",
     "test": "jest",
     "test:app-auth": "jest src/tests/app-auth.test.ts --detectOpenHandles --forceExit",
     "test:core_logic": "jest core_logic.test.ts",
