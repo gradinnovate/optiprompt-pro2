@@ -39,7 +39,7 @@ const CheckConnection: FC = () => {
   };
 
   const handleProceed = () => {
-    navigate('/chat');
+    navigate('/app');
   };
 
   const getDateLocale = () => {

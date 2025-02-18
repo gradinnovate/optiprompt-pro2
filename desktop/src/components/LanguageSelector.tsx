@@ -8,6 +8,7 @@ const LanguageSelector: FC = () => {
     { code: 'en', name: 'English' },
     { code: 'zh', name: '中文' },
     { code: 'ja', name: '日本語' },
+    { code: 'ko', name: '한국어' },
   ];
 
   return (

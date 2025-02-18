@@ -5,6 +5,9 @@ import { AuthProvider, useAuth } from './lib/context/AuthContext'
 import Navbar from './components/layout/Navbar'
 import HomePage from './pages/Home'
 import CheckConnection from './pages/CheckConnection'
+import MainPage from './pages/Main'
+import StandalonePage from './pages/optimize/standalone'
+import ExampleGuidedPage from './pages/optimize/example-guided'
 
 const AppLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -54,6 +57,9 @@ const AppContent: FC = () => {
       <Routes>
         <Route path="/" element={<AppLayout><HomePage /></AppLayout>} />
         <Route path="/check-connection" element={<AppLayout><CheckConnection /></AppLayout>} />
+        <Route path="/app" element={<AppLayout><MainPage /></AppLayout>} />
+        <Route path="/optimize/standalone" element={<AppLayout><StandalonePage /></AppLayout>} />
+        <Route path="/optimize/example-guided" element={<AppLayout><ExampleGuidedPage /></AppLayout>} />
       </Routes>
     </Router>
   )
