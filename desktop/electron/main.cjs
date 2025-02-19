@@ -162,8 +162,8 @@ function createWindow() {
       preload: path.join(__dirname, 'preload.cjs')
     },
     // Set window style
-    titleBarStyle: 'hidden',
-    frame: false,
+    titleBarStyle: 'Inset',
+    //trafficLightPosition: { x: 20, y: 20 },
     backgroundColor: '#1a1b1e',
     show: false  // Don't show the window until it's ready
   })

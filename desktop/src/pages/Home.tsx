@@ -11,7 +11,9 @@ const HomePage: FC = () => {
     <>
       <Background />
       <main className="relative z-0">
-        <Hero />
+        <div className="relative max-w-6xl mx-auto px-4 py-32 sm:px-6 md:px-8">
+          <Hero />
+        </div>
       </main>
     </>
   )

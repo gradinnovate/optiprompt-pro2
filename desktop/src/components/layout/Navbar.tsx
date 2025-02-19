@@ -13,21 +13,21 @@ const Navbar: FC = () => {
   const { user } = useAuth();
 
   return (
-    <nav className="fixed w-full px-4 py-3 z-50 bg-gray-900/40 backdrop-blur-sm border-b border-blue-200/10">
+    <nav className="fixed w-full px-4 py-4 z-50 bg-gray-900/40 backdrop-blur-sm border-b border-blue-200/10">
       <div className="max-w-7xl mx-auto grid grid-cols-12 items-center">
         {/* Logo section */}
         <div className="col-span-3">
           <Link 
             to="/" 
-            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
           >
-            <img src="/logo.svg" alt="OptiPrompt Pro" className="w-8 h-8" />
+            <img src="/logo.svg" alt="OptiPrompt Pro" className="w-9 h-9" />
             <span className="text-xl font-semibold text-blue-50">OptiPrompt Pro</span>
           </Link>
         </div>
 
         {/* Navigation links - center */}
-        <div className="col-span-6 hidden md:flex items-center justify-center gap-4">
+        <div className="col-span-6 hidden md:flex items-center justify-center gap-6">
           <Link to="/">
             <Button 
               variant="ghost" 
@@ -36,20 +36,31 @@ const Navbar: FC = () => {
               {t('nav.home')}
             </Button>
           </Link>
-          {location.pathname !== '/' && (
-            <Link to="/check-connection">
-              <Button 
-                variant="ghost" 
-                className={location.pathname === '/check-connection' ? 'text-blue-200' : 'text-blue-200/60 hover:text-blue-200'}
-              >
-                {t('nav.connection')}
-              </Button>
-            </Link>
+          {user && (
+            <>
+              
+              <Link to="/check-connection">
+                <Button 
+                  variant="ghost" 
+                  className={location.pathname === '/check-connection' ? 'text-blue-200' : 'text-blue-200/60 hover:text-blue-200'}
+                >
+                  {t('nav.connection')}
+                </Button>
+              </Link>
+              <Link to="/app">
+                <Button 
+                  variant="ghost" 
+                  className={location.pathname === '/app' ? 'text-blue-200' : 'text-blue-200/60 hover:text-blue-200'}
+                >
+                  {t('nav.optimize')}
+                </Button>
+              </Link>
+            </>
           )}
         </div>
 
         {/* Right section - Language & User Profile */}
-        <div className="col-span-2 flex items-center justify-end gap-4">
+        <div className="col-span-2 flex items-center justify-end gap-6">
           <LanguageSelector /> 
           {user && (
             <div className="flex items-center gap-2 min-w-[250px]">

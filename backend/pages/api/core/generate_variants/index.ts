@@ -3,6 +3,61 @@ import { verifyToken } from '../../../../src/lib/auth/verify';
 import { generatePromptVariants } from '../../../../src/lib/core/generate_variants';
 import { ApiResponse } from '../../../../src/types/api';
 import { corsMiddleware } from '../../../../src/lib/cors';
+
+
+/**
+ * Generate Prompt Variants API
+ * 
+ * This API endpoint generates variations of a given prompt based on a task description.
+ * 
+ * @route POST /api/core/generate_variants
+ * 
+ * @authentication Required - Bearer token must be provided in Authorization header
+ * 
+ * @body {
+ *   prompt: string - The initial prompt to generate variants from
+ *   taskDescription: string - Description of the task/context for prompt generation
+ * }
+ * 
+ * @returns {
+ *   status: 'success' | 'error',
+ *   type?: 'prompt_variants',
+ *   data?: {
+ *     variants: string[] - Array of generated prompt variants
+ *   },
+ *   error?: string - Error message if status is 'error'
+ * }
+ * 
+ * @example
+ * // Request
+ * POST /api/core/generate_variants
+ * Authorization: Bearer <token>
+ * {
+ *   "prompt": "Translate this text to French",
+ *   "taskDescription": "Create a translation prompt"
+ * }
+ * 
+ * // Success Response
+ * {
+ *   "status": "success", 
+ *   "type": "prompt_variants",
+ *   "data": {
+ *     "variants": [
+ *       "Please translate the following text into French while maintaining the original tone",
+ *       "Convert this text to French, preserving its style and meaning",
+ *       // ... more variants
+ *     ]
+ *   }
+ * }
+ * 
+ * // Error Response
+ * {
+ *   "status": "error",
+ *   "error": "Missing required fields"
+ * }
+ */
+
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse>

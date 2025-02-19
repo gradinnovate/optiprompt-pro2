@@ -85,7 +85,7 @@ export const promptTemplate: PromptTemplate = {
 Initial Prompt: {initialPrompt}
 
 Instructions:
-Please generate a single optimized version of the Initial Prompt. Ensure that the optimized prompt retains the original intent and meaning while enhancing clarity and style. Wrap the optimized prompt with <START> and <END> tags.
+Please generate a single optimized version of the Initial Prompt. Ensure that the optimized prompt retains the original intent and meaning while enhancing clarity and style and is suitable for small size local LLM. Wrap the optimized prompt with <START> and <END> tags.
 
 [Optimized Prompt]:`,
   meta_critique_template: `I'm trying to write a zero-shot instruction that will help the most capable and suitable agent to solve the task.

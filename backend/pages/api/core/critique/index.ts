@@ -4,6 +4,53 @@ import { critiqueGenerate } from '../../../../src/lib/core/critique';
 import { ApiResponse } from '../../../../src/types/api';
 import { corsMiddleware } from '../../../../src/lib/cors';
 
+/**
+ * Critique Generation API
+ * 
+ * This API endpoint generates a critique for a given prompt by comparing it with an example.
+ * 
+ * @route POST /api/core/critique
+ * 
+ * @authentication Required - Bearer token must be provided in Authorization header
+ * 
+ * @body {
+ *   prompt: string - The prompt to be critiqued
+ *   example: string - An example prompt to compare against
+ * }
+ * 
+ * @returns {
+ *   status: 'success' | 'error',
+ *   type: 'critique_feedback',
+ *   data?: {
+ *     critiqueFeedback: string - The generated critique feedback
+ *   },
+ *   error?: string - Error message if status is 'error'
+ * }
+ * 
+ * @example
+ * // Request
+ * POST /api/core/critique
+ * Authorization: Bearer <token>
+ * {
+ *   "prompt": "Write a story about a dog",
+ *   "example": "Create an engaging story about a loyal dog who helps their owner overcome challenges"
+ * }
+ * 
+ * // Success Response
+ * {
+ *   "status": "success",
+ *   "type": "critique_feedback",
+ *   "data": {
+ *     "critiqueFeedback": "The prompt lacks specific details and emotional elements" 
+ *   }
+ * }
+ * 
+ * // Error Response
+ * {
+ *   "status": "error", 
+ *   "error": "Missing required fields"
+ * }
+ */
 
 export default async function handler(
   req: NextApiRequest,
@@ -47,10 +94,7 @@ export default async function handler(
     const result = await critiqueGenerate(prompt, example);
 
     // 5. 返回結果
-    return res.status(200).json({
-      status: 'success',
-      data: result
-    });
+    return res.status(200).json(result);
   } catch (error) {
     console.error('Error in critique API:', error);
     return res.status(500).json({ 

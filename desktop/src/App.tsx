@@ -1,6 +1,6 @@
 import { ErrorBoundary } from 'react-error-boundary'
 import { FC } from 'react'
-import { HashRouter as Router, Routes, Route } from 'react-router-dom'
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './lib/context/AuthContext'
 import Navbar from './components/layout/Navbar'
 import HomePage from './pages/Home'
@@ -26,6 +26,14 @@ function ErrorFallback({error}: {error: Error}) {
     </div>
   );
 }
+
+const ProtectedRoute: FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user } = useAuth();
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+  return <>{children}</>;
+};
 
 const App: FC = () => {
   console.log('App component rendering')
@@ -56,10 +64,38 @@ const AppContent: FC = () => {
     <Router>
       <Routes>
         <Route path="/" element={<AppLayout><HomePage /></AppLayout>} />
-        <Route path="/check-connection" element={<AppLayout><CheckConnection /></AppLayout>} />
-        <Route path="/app" element={<AppLayout><MainPage /></AppLayout>} />
-        <Route path="/optimize/standalone" element={<AppLayout><StandalonePage /></AppLayout>} />
-        <Route path="/optimize/example-guided" element={<AppLayout><ExampleGuidedPage /></AppLayout>} />
+        <Route 
+          path="/check-connection" 
+          element={
+            <ProtectedRoute>
+              <AppLayout><CheckConnection /></AppLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/app" 
+          element={
+            <ProtectedRoute>
+              <AppLayout><MainPage /></AppLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/optimize/standalone" 
+          element={
+            <ProtectedRoute>
+              <AppLayout><StandalonePage /></AppLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/optimize/example-guided" 
+          element={
+            <ProtectedRoute>
+              <AppLayout><ExampleGuidedPage /></AppLayout>
+            </ProtectedRoute>
+          } 
+        />
       </Routes>
     </Router>
   )

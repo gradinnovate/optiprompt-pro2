@@ -4,6 +4,53 @@ import { generateInitialPrompt } from '../../../../src/lib/core/generate_prompt'
 import { ApiResponse } from '../../../../src/types/api';
 import { corsMiddleware } from '../../../../src/lib/cors';
 
+/**
+ * Generate Initial Prompt API
+ * 
+ * This API endpoint generates an optimized initial prompt based on a task description and initial prompt.
+ * 
+ * @route POST /api/core/generate_prompt
+ * 
+ * @authentication Required - Bearer token must be provided in Authorization header
+ * 
+ * @body {
+ *   taskDescription: string - Description of the task/context for prompt generation
+ *   initialPrompt: string - The initial prompt to be optimized
+ * }
+ * 
+ * @returns {
+ *   status: 'success' | 'error',
+ *   type?: 'prompt_optimization',
+ *   data?: {
+ *     optimizedPrompt: string - The optimized prompt
+ *   },
+ *   error?: string - Error message if status is 'error'
+ * }
+ * 
+ * @example
+ * // Request
+ * POST /api/core/generate_prompt
+ * Authorization: Bearer <token>
+ * {
+ *   "taskDescription": "Create a translation prompt for English to French",
+ *   "initialPrompt": "Translate to French"
+ * }
+ * 
+ * // Success Response
+ * {
+ *   "status": "success",
+ *   "type": "prompt_optimization", 
+ *   "data": {
+ *     "optimizedPrompt": "Please translate the following English text into French, maintaining the original tone and context while ensuring natural and fluent translation."
+ *   }
+ * }
+ * 
+ * // Error Response
+ * {
+ *   "status": "error",
+ *   "error": "Missing required fields"
+ * }
+ */
 
 export default async function handler(
   req: NextApiRequest,
@@ -25,7 +72,7 @@ export default async function handler(
 
     const token = authHeader.replace('Bearer ', '');
     await verifyToken(token);
-
+    
     // 2. 解析請求體
     if (!req.body) {
       return res.status(400).json({

@@ -27,6 +27,7 @@ const CheckConnection: FC = () => {
     setConnectionStatus(isConnected ? 'success' : 'failed');
 
     if (isConnected) {
+      OllamaService.setBaseUrl(baseUrl);
       const modelList = await OllamaService.listModels(baseUrl);
       setModels(modelList);
     }
@@ -34,7 +35,6 @@ const CheckConnection: FC = () => {
   };
 
   const handleUpdateBaseUrl = () => {
-    OllamaService.setBaseUrl(baseUrl);
     checkConnectionAndLoadModels();
   };
 
@@ -54,7 +54,7 @@ const CheckConnection: FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-slate-900">
       <div className="container mx-auto px-4 py-16">
-        <Card className="max-w-4xl mx-auto bg-gray-900/40 border-blue-200/10 backdrop-blur-sm">
+        <Card className="mx-auto bg-gray-900/40 border-blue-200/10 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="text-2xl text-blue-50">
               {t('checkConnection.title')}
