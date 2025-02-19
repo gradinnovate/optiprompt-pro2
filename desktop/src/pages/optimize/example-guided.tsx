@@ -305,7 +305,7 @@ const ExampleGuidedPage: FC = () => {
                     <div className="space-y-4">
                       <div className="bg-gray-900/40 rounded-lg p-4 border border-blue-200/10 text-blue-100">
                         <h3 className="text-xl font-semibold mb-3">{t('initialPromptTitle')}</h3>
-                        <p className="text-base text-left">{initialPrompt || t('noPrompt')}</p>
+                        <ResultContent content={initialPrompt || t('noPrompt')} />
                       </div>
                       <div className="bg-gray-900/40 rounded-lg p-4 border border-blue-200/10 text-blue-100">
                         <h3 className="text-lg font-semibold mb-2">{t('initialResult')}</h3>
@@ -317,7 +317,7 @@ const ExampleGuidedPage: FC = () => {
                     <div className="space-y-4">
                       <div className="bg-gray-900/40 rounded-lg p-4 border border-blue-200/10 text-blue-100">
                         <h3 className="text-lg font-semibold mb-2">{t('optimizedPrompt')}</h3>
-                        <p className="text-base text-left">{results?.optimizedPrompt || t('noPrompt')}</p>
+                        <ResultContent content={results?.optimizedPrompt || t('noPrompt')} />
                       </div>
                       <div className="bg-gray-900/40 rounded-lg p-4 border border-blue-200/10 text-blue-100">
                         <h3 className="text-lg font-semibold mb-2">{t('critiqueFeedback')}</h3>
@@ -330,7 +330,7 @@ const ExampleGuidedPage: FC = () => {
                       {(results?.refinedPrompts || []).map((prompt, index) => (
                         <div key={index} className="bg-gray-900/40 rounded-lg p-4 border border-blue-200/10 text-blue-100">
                           <h3 className="text-lg font-medium text-blue-200/80 mb-2">{t('variant')} {index + 1}</h3>
-                          <p className="text-base text-left">{prompt}</p>
+                          <ResultContent content={prompt || t('noPrompt')} />
                         </div>
                       ))}
                     </div>

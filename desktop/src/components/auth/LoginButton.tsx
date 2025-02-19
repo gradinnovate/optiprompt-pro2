@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/context/AuthContext';
 import { UserCircle2, LogOut } from 'lucide-react';
 import { signInWithGoogle } from '@/lib/services/auth';
-import { getAuth } from 'firebase/auth';
+
 
 const LoginButton: FC = () => {
   const { t } = useTranslation();

@@ -3,11 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
+  CardDescription
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { motion } from 'framer-motion';
