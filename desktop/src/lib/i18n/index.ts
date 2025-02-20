@@ -102,6 +102,17 @@ i18n
             description: 'Provide an example to guide the optimization process'
           },
           showThinkingProcess: 'Show Thinking Process',
+          toast: {
+            credits: {
+              insufficient: {
+                title: "Insufficient credits",
+                description: "You are running out of free credits."
+              }
+            }
+          },
+          download: {
+            json: "Download JSON"
+          }
         },
       },
       zh: {
@@ -199,6 +210,17 @@ i18n
             description: '提供一個範例來引導優化過程'
           },
           showThinkingProcess: '顯示思考過程',
+          toast: {
+            credits: {
+              insufficient: {
+                title: "點數不足",
+                description: "您的免費點數已用完"
+              }
+            }
+          },
+          download: {
+            json: "下載 JSON"
+          }
         },
       },
       ja: {
@@ -296,6 +318,17 @@ i18n
             description: '最適化プロセスを導くための例を提供してください'
           },
           showThinkingProcess: '思考プロセスを表示',
+          toast: {
+            credits: {
+              insufficient: {
+                title: "Insufficient credits",
+                description: "You are running out of free credits."
+              }
+            }
+          },
+          download: {
+            json: "JSONをダウンロード"
+          }
         },
       },
       ko: {
@@ -393,6 +426,17 @@ i18n
             description: '최적화 과정을 안내할 예시를 제공하세요'
           },
           showThinkingProcess: '사고 과정 표시',
+          toast: {
+            credits: {
+              insufficient: {
+                title: "Insufficient credits",
+                description: "You are running out of free credits."
+              }
+            }
+          },
+          download: {
+            json: "JSON 다운로드"
+          }
         },
       },
     },

@@ -11,6 +11,10 @@ structure:
         name: "OptiPrompt-Backend"
         description: "OptiPrompt-Backend is a project with a backend apis"
         path: "backend"
+    backend-next:
+        name: "OptiPrompt-Backend-Next"
+        description: "OptiPrompt-Backend-Next is a next.js project with a backend apis"
+        path: "backend-next"
 
 
 

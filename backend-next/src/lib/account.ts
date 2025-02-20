@@ -2,7 +2,7 @@ import { Account, AccountInfo, CreateAccountInput } from '../types/account';
 import { Credits, CreditTransactionType } from '../types/credits';
 import { accountsRef } from './firebase/admin';
 
-const SIGNUP_BONUS = 100; // 註冊獎勵點數
+const SIGNUP_BONUS = 20; // 註冊獎勵點數
 
 // 內部函數，只在此模塊內使用
 async function createAccount(input: CreateAccountInput): Promise<Account> {
@@ -102,7 +102,23 @@ export async function getAccountByUid(uid: string): Promise<Account | null> {
     throw new Error(`Failed to get account: ${error.message}`);
   }
 }
-
+export async function getBalance(uid: string): Promise<number> {
+  const account = await getAccountByUid(uid);
+  if (!account) {
+    throw new Error('Account not found');
+  }
+  return account.credits.balance;
+}
+export async function deductBalance(uid: string, amount: number): Promise<void> {
+  const account = await getAccountByUid(uid);
+  if (!account) {
+    throw new Error('Account not found');
+  }
+  account.credits.balance -= amount;
+  await accountsRef.doc(uid).update({
+    credits: account.credits
+  });
+}
 async function updateAccountLastLogin(uid: string): Promise<void> {
   try {
     await accountsRef.doc(uid).update({

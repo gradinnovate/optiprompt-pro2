@@ -8,12 +8,16 @@ import { Switch } from "@/components/ui/switch";
 import Background from '@/components/ui/Background';
 import ModelSelector from '@/components/ModelSelector';
 import { ollamaChat } from '@/lib/services/ollamachat';
-import { promptApi } from '@/lib/services/api';
+import { promptApi, accountApi } from '@/lib/services/api';
 import { Loader2 } from 'lucide-react';
 import { OllamaService } from '@/lib/services/ollama';
 import ReactMarkdown from 'react-markdown';
 import { isMarkdown } from '@/lib/utils/markdown';
-
+import { useToast } from '@/components/ui/toast';
+import { downloadJson } from '@/lib/utils/download';
+import { removeThinkingProcess } from '@/lib/utils/text';
+import { Download } from 'lucide-react';
+import { Conversation } from '@/lib/conversation';
 interface OptimizationResults {
   initialOutput: string;
   optimizedPrompt: string;
@@ -35,18 +39,9 @@ const ResultContent: FC<{ content: string }> = ({ content }) => {
   return <p className="text-base whitespace-pre-wrap text-left">{content}</p>;
 };
 
-const removeThinkingProcess = (text: string): string => {
-  // Return original text if no thinking process tags found
-  if (!text.includes('<think>') || !text.includes('</think>')) {
-    return text;
-  }
 
-  // Use regex to match content between <think> and </think> tags, including the tags
-  const thinkingProcessRegex = /<think>[\s\S]*?<\/think>/g;
-  
-  // Remove all instances of thinking process sections
-  return text.replace(thinkingProcessRegex, '').trim();
-};
+
+
 
 
 const ExampleGuidedPage: FC = () => {
@@ -61,6 +56,8 @@ const ExampleGuidedPage: FC = () => {
   const [optimizing, setOptimizing] = useState(false);
   const [showThinking, setShowThinking] = useState(false);
   const [rawResults, setRawResults] = useState<Partial<OptimizationResults>>({});
+  const [credits, setCredits] = useState<number | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchModels = async () => {
@@ -92,8 +89,28 @@ const ExampleGuidedPage: FC = () => {
       )
     });
   }, [showThinking, rawResults]);
+  useEffect(() => {
+    const fetchCredits = async () => {
+      try {
+        const response = await accountApi.balance();
+        setCredits(response.balance);
+      } catch (error) {
+        setCredits(0);
+        console.error('Failed to fetch credits:', error);
+      }
+    };
+    fetchCredits();
+  }, []);
 
   const handleOptimize = async () => {
+    if (credits === null || credits < 1) {
+      toast({
+        title: t('toast.credits.insufficient.title'),
+        description: t('toast.credits.insufficient.description'),
+        variant: 'destructive',
+      });
+      return;
+    }
     if (!selectedModel || !taskDescription || !initialPrompt || !example) {
       return;
     }
@@ -103,6 +120,13 @@ const ExampleGuidedPage: FC = () => {
     setResults({});
     setRawResults({});
     ollamaChat.updateBaseUrl(OllamaService.getBaseUrl());
+    try {
+      const { balance } = await accountApi.deductBalance();
+      setCredits(balance);      
+    } catch (error) {
+      setOptimizing(false);
+      return;
+    }
 
     try {
       // Step 3: Test initial prompt
@@ -148,16 +172,60 @@ const ExampleGuidedPage: FC = () => {
           variantOutputs: [...variantOutputs]
         }));
       }
-   
+
+
+      const conversation: Conversation = {
+        model: selectedModel,
+        taskDescription,
+        initialPrompt,
+        example,
+        initialOutput: initialOutput || '',
+        optimizedPrompt: optimizedPrompt || '',
+        critiqueFeedback: critiqueFeedback || '',
+        refinedPrompts: refinedPrompts || [],
+        variantOutputs: variantOutputs || [],
+        variantPrompts: []
+      };
+      
+      await promptApi.recordConversation(conversation);
+      
     } catch (error) {
       console.error('Optimization failed:', error);
     } finally {
       setOptimizing(false);
     }
   };
+  const handleDownload = () => {
+    const exportData = {
+      selectedModel,
+      taskDescription,
+      initialPrompt,
+      example,
+      results: {
+        initialOutput: results.initialOutput,
+        optimizedPrompt: results.optimizedPrompt,
+        critiqueFeedback: results.critiqueFeedback,
+        refinedPrompts: results.refinedPrompts,
+        variantOutputs: results.variantOutputs
+      }
+    };
+    
+    downloadJson(exportData, `prompt-optimization-${Date.now()}.json`);
+  };
 
   return (
     <>
+      <div className="absolute top-20 right-4 bg-gradient-to-r from-blue-900/90 to-blue-800/90 backdrop-blur-sm px-4 py-2.5 rounded-full shadow-lg border border-blue-700/50 z-[60] flex items-center gap-2">
+        <div className="w-2 h-2 rounded-full bg-blue-400/80 animate-pulse" />
+        <span className="text-blue-100/70">Credits:</span>
+        <span className="font-semibold text-blue-100">
+          {credits === null ? (
+            <span className="animate-pulse">...</span>
+          ) : (
+            credits
+          )}
+        </span>
+      </div>
       <Background />
       <main className="relative z-0">
         <div className="relative mx-auto px-2 py-32 sm:px-4">
@@ -300,6 +368,16 @@ const ExampleGuidedPage: FC = () => {
                         className="data-[state=checked]:bg-yellow-600"
                       />
                     </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="ml-4 bg-blue-900/40 border-blue-200/10 text-blue-100 hover:bg-blue-800/40"
+                      onClick={handleDownload}
+                      disabled={!results.variantOutputs}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      {t('download.json')}
+                    </Button>
                   </div>
                   <TabsContent value="initial-result" className="mt-4">
                     <div className="space-y-4">

@@ -8,6 +8,7 @@ import CheckConnection from './pages/CheckConnection'
 import MainPage from './pages/Main'
 import StandalonePage from './pages/optimize/standalone'
 import ExampleGuidedPage from './pages/optimize/example-guided'
+import { ToastProvider } from '@/components/ui/toast'
 
 const AppLayout: FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -45,7 +46,9 @@ const App: FC = () => {
       }}
     >
       <AuthProvider>
-        <AppContent />
+        <ToastProvider>
+          <AppContent />
+        </ToastProvider>
       </AuthProvider>
     </ErrorBoundary>
   )

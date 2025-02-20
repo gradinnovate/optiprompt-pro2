@@ -3,6 +3,7 @@ import { verifyGoogleToken } from '../google/auth';
 
 // 共用的 token payload 類型
 export type TokenPayload = {
+  uid: string;
   email: string;
   name?: string;
   picture?: string;
@@ -20,6 +21,7 @@ export async function verifyToken(token: string): Promise<TokenPayload> {
     try {
       const decodedToken = await auth.verifyIdToken(token);
       return {
+        uid: decodedToken.uid,
         email: decodedToken.email || '',
         name: decodedToken.name,
         picture: decodedToken.picture,

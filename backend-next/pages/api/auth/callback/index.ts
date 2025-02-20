@@ -3,6 +3,7 @@ import { getGoogleTokens, verifyGoogleToken } from '../../../../src/lib/google/a
 import { auth } from '../../../../src/lib/firebase/admin';
 import { ApiResponse } from '../../../../src/types/api';
 import { corsMiddleware } from '../../../../src/lib/cors';
+import { handleUserLogin } from '../../../../src/lib/account';
 
 export type AuthCallbackResponse = ApiResponse & {
   data?: {
@@ -92,6 +93,12 @@ export default async function handler(
           return auth.getUserByEmail(payload.email!);
         }
         throw error;
+      });
+      handleUserLogin({
+        uid: firebaseUser.uid,
+        email: firebaseUser.email || '',
+        displayName: firebaseUser.displayName || '',
+        photoURL: firebaseUser.photoURL || '',
       });
 
       // 8. 創建自定義 token
