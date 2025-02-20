@@ -21,7 +21,7 @@ const Navbar: FC = () => {
             to="/" 
             className="flex items-center gap-3 hover:opacity-80 transition-opacity"
           >
-            <img src="/logo.svg" alt="OptiPrompt Pro" className="w-9 h-9" />
+            <img src="./logo.svg" alt="OptiPrompt Pro" className="w-9 h-9" />
             <span className="text-xl font-semibold text-blue-50">OptiPrompt Pro</span>
           </Link>
         </div>

@@ -111,8 +111,11 @@ ipcMain.handle('start-auth-server', async (event, { port }) => {
 
       if (code) {
         event.sender.send('auth-code-received', code)
-        res.writeHead(200, { 'Content-Type': 'text/html' })
-        res.end('<html><body><h1>Authorization Successful</h1><p>You can close this window now.</p></body></html>')
+        res.writeHead(302, { 
+          'Location': 'https://optiprompt-pro2.vercel.app/',
+          'Content-Type': 'text/html' 
+        })
+        res.end()
       } else {
         res.writeHead(400, { 'Content-Type': 'text/plain' })
         res.end('No authorization code received')
@@ -197,7 +200,7 @@ function createWindow() {
       })
       
       // 在生產環境也開啟開發者工具以便調試
-      mainWindow.webContents.openDevTools()
+      //mainWindow.webContents.openDevTools()
       
       // 監聽更多事件
       mainWindow.webContents.on('console-message', (event, level, message) => {

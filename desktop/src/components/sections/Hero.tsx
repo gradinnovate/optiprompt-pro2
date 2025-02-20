@@ -44,6 +44,14 @@ const Hero: FC = () => {
     navigate('/check-connection');
   };
 
+  const handleLearnMore = async () => {
+    try {
+      await window.electron.ipcRenderer.invoke('open-external', 'https://optiprompt-pro2.vercel.app');
+    } catch (error) {
+      console.error('Failed to open external link:', error);
+    }
+  };
+
   return (
     <div className="relative overflow-hidden">
       {/* Glowing orb effects */}
@@ -87,6 +95,7 @@ const Hero: FC = () => {
               variant="outline" 
               size="lg" 
               className="text-lg px-8 py-6 text-black-100 border-blue-200/20 hover:bg-blue-900/20 hover:text-white backdrop-blur-sm"
+              onClick={handleLearnMore}
             >
               {t('learnMore')}
             </Button>
