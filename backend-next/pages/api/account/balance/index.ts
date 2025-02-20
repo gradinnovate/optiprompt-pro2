@@ -76,7 +76,7 @@ export default async function handler(
     console.error('Error in balance API:', error);
     return res.status(500).json({ 
       status: 'error',
-      error: 'Internal server error' 
+      error: error instanceof Error ? error.message : 'Internal server error'
     });
   }
 } 

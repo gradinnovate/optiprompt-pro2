@@ -31,7 +31,7 @@ export default async function handler(
     if (req.method !== 'POST') {
       return res.status(405).json({
         status: 'error',
-        error: 'Method not allowed'
+        error: 'Method not allowed'+'?'+req.method
       });
     }
 
@@ -92,7 +92,7 @@ export default async function handler(
         if (error.code === 'auth/email-already-exists') {
           return auth.getUserByEmail(payload.email!);
         }
-        throw error;
+        throw Error('firebase create user error:'+error.message);
       });
       handleUserLogin({
         uid: firebaseUser.uid,

@@ -58,6 +58,7 @@ export async function verifyGoogleToken(
   }
 
   return {
+    uid: payload.sub,
     email: payload.email || '',
     name: payload.name,
     picture: payload.picture,
