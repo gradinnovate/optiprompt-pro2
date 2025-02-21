@@ -58,7 +58,7 @@ export const translations = {
     howToUse: {
       title: 'How to Use',
       steps: [
-        'Detect Local AI Models',
+        'Detect Local AI Models (Users need to install Ollama first)',
         'Input Initial Prompt',
         'Automatic Optimization',
         'Test & Evaluate',
@@ -148,7 +148,7 @@ export const translations = {
     howToUse: {
       title: '如何使用',
       steps: [
-        '偵測本地 AI 模型',
+        '偵測本地 AI 模型 (使用者需要先安裝 Ollama)',
         '輸入初步提示詞',
         '自動優化指令',
         '測試與評估',
@@ -238,7 +238,7 @@ export const translations = {
     howToUse: {
       title: '使用方法',
       steps: [
-        'ローカルAIモデルの検出',
+        'ローカルAIモデルの検出 (Ollamaを先にインストールする必要があります)',
         '初期プロンプトの入力',
         '自動最適化',
         'テストと評価',
@@ -328,7 +328,7 @@ export const translations = {
     howToUse: {
       title: '사용 방법',
       steps: [
-        '로컬 AI 모델 감지',
+        '로컬 AI 모델 감지 (사용자가 Ollama를 먼저 설치해야 함)',
         '초기 프롬프트 입력',
         '자동 최적화',
         '테스트 및 평가',
