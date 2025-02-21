@@ -116,15 +116,7 @@ const StandalonePage: FC = () => {
     setResults({});
     setRawResults({});
     ollamaChat.updateBaseUrl(OllamaService.getBaseUrl());
-    try {
-      const { balance } = await accountApi.deductBalance();
-      setCredits(balance);      
-    } catch (error) {
-      setOptimizing(false);
-      return;
-    }
-
-
+    
     try {
       // Step 3: Test initial prompt
       let initialOutput = await ollamaChat.chat(selectedModel, [
@@ -172,7 +164,13 @@ const StandalonePage: FC = () => {
         variantOutputs: variantOutputs || [],
         variantPrompts: variants || []
       };
-      
+      try {
+        const { balance } = await accountApi.deductBalance();
+        setCredits(balance);      
+      } catch (error) {
+        setOptimizing(false);
+        return;
+      }
       await promptApi.recordConversation(conversation);
       
    

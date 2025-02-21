@@ -120,13 +120,7 @@ const ExampleGuidedPage: FC = () => {
     setResults({});
     setRawResults({});
     ollamaChat.updateBaseUrl(OllamaService.getBaseUrl());
-    try {
-      const { balance } = await accountApi.deductBalance();
-      setCredits(balance);      
-    } catch (error) {
-      setOptimizing(false);
-      return;
-    }
+    
 
     try {
       // Step 3: Test initial prompt
@@ -186,7 +180,13 @@ const ExampleGuidedPage: FC = () => {
         variantOutputs: variantOutputs || [],
         variantPrompts: []
       };
-      
+      try {
+        const { balance } = await accountApi.deductBalance();
+        setCredits(balance);      
+      } catch (error) {
+        setOptimizing(false);
+        return;
+      }
       await promptApi.recordConversation(conversation);
       
     } catch (error) {
