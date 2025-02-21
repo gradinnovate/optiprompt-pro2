@@ -68,7 +68,8 @@ export const translations = {
     },
     buttons: {
       getStarted: 'Get Started',
-      learnMore: 'Learn More'
+      learnMore: 'Learn More',
+      downloadMac: 'Download Mac Desktop App (ARM)'
     },
     footer: {
       slogan: 'Unlock the full potential of your local LLMs',
@@ -157,7 +158,8 @@ export const translations = {
     },
     buttons: {
       getStarted: '立即開始',
-      learnMore: '了解更多'
+      learnMore: '了解更多',
+      downloadMac: '下載 Mac Desktop App (ARM)'
     },
     footer: {
       slogan: '釋放本地 LLM 的全部潛能',
@@ -246,7 +248,8 @@ export const translations = {
     },
     buttons: {
       getStarted: '始める',
-      learnMore: '詳細を見る'
+      learnMore: '詳細を見る',
+      downloadMac: 'Mac デスクトップアプリをダウンロード (ARM)'
     },
     footer: {
       slogan: 'ローカルLLMの可能性を最大限に引き出す',
@@ -335,7 +338,8 @@ export const translations = {
     },
     buttons: {
       getStarted: '시작하기',
-      learnMore: '자세히 알아보기'
+      learnMore: '자세히 알아보기',
+      downloadMac: 'Mac 데스크톱 앱 다운로드 (ARM)'
     },
     footer: {
       slogan: '로컬 LLM의 잠재력을 최대한 활용하세요',
